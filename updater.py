@@ -18,7 +18,8 @@ import struct
 from datetime import datetime
 from functools import wraps
 
-CHECKIP_URL = "http://ipinfo.io/ip"
+CHECKIP_URL_4 = "http://ipinfo.io/ip"
+CHECKIP_URL_6 = "http://v6.ifconfig.co/ip"
 APIURL = "https://api.digitalocean.com/v2"
 
 
@@ -67,7 +68,11 @@ def request(url, data, headers, method=None):
 
 def get_external_ip(expected_rtype):
     """ Return the current external IP. """
-    external_ip = get_url(CHECKIP_URL).rstrip()
+    if expected_rtype == "A":
+        external_ip = get_url(CHECKIP_URL_4).rstrip()
+    else:
+        external_ip = get_url(CHECKIP_URL_6).rstrip()
+
     ip = ipaddress.ip_address(external_ip)
     if (ip.version == 4 and expected_rtype != 'A') or (ip.version == 6 and expected_rtype != 'AAAA'):
         raise Exception('Expected Rtype {} but got {}'.format(expected_rtype, external_ip))
